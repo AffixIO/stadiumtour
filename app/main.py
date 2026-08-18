@@ -64,6 +64,19 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+
+@app.middleware("http")
+async def no_store_static(request, call_next):
+    response = await call_next(request)
+    if request.url.path.startswith("/static/") or request.url.path == "/favicon.ico":
+        response.headers["Cache-Control"] = "no-store"
+    return response
+
+
+@app.get("/favicon.ico")
+async def favicon() -> FileResponse:
+    return FileResponse(STATIC_DIR / "favicon.svg", media_type="image/svg+xml")
 app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
 
 
