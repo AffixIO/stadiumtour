@@ -60,6 +60,12 @@ body {
   line-height: 1.6;
 }
 
+#start-error {
+  margin-top: 12px;
+  color: var(--deny);
+  font-size: 14px;
+}
+
 button,
 select {
   border-radius: 8px;
