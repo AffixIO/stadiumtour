@@ -1,3 +1,4 @@
+window.__arenaModuleLoaded = true;
 // Credit: @paparichens
 import { ArenaScene } from "./scene.js";
 import { FirstPersonPlayer } from "./player.js";

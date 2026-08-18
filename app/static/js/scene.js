@@ -1,5 +1,5 @@
 // Credit: @paparichens
-import * as THREE from "three";
+import * as THREE from "/static/vendor/three.module.js?v=arena5";
 import { createMaterialLibrary, drawLedFrame, makeLedScreen, makeSignTexture } from "./materials.js";
 import {
   addBarrierRun,
