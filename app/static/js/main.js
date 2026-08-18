@@ -9,6 +9,7 @@ import { drawMinimap } from "./minimap.js";
 
 const startScreen = document.getElementById("start-screen");
 const startButton = document.getElementById("start-button");
+const startError = document.getElementById("start-error");
 const canvas = document.getElementById("game-canvas");
 const minimapCanvas = document.getElementById("minimap");
 
@@ -32,13 +33,8 @@ let audio;
 let hovered = null;
 
 function updateHover(next) {
-  if (hovered && hovered.mesh?.material?.emissive) {
-    hovered.mesh.material.emissive.set(0x000000);
-  }
   hovered = next;
-  if (hovered && hovered.mesh?.material?.emissive) {
-    hovered.mesh.material.emissive.set(0x17475f);
-  }
+  if (scene) scene.setHovered(next);
 }
 
 async function bootstrap() {
@@ -181,7 +177,16 @@ function loop() {
 }
 
 startButton.addEventListener("click", async () => {
-  startScreen.classList.add("hidden");
-  await bootstrap();
-  player.lock();
+  startButton.disabled = true;
+  startButton.textContent = "Loading Arena...";
+  try {
+    await bootstrap();
+    startScreen.classList.add("hidden");
+    player.lock();
+  } catch (error) {
+    startError.textContent = `Arena failed to start: ${error.message}`;
+    startError.classList.remove("hidden");
+    startButton.disabled = false;
+    startButton.textContent = "Enter Arena";
+  }
 });

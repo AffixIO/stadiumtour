@@ -7,8 +7,8 @@ export class FirstPersonPlayer {
     this.domElement = domElement;
     this.velocity = new THREE.Vector3();
     this.direction = new THREE.Vector3();
-    this.position = new THREE.Vector3(0, 2.2, 42);
-    this.yaw = 0;
+    this.position = new THREE.Vector3(0, 2.2, 38);
+    this.yaw = Math.PI;
     this.pitch = 0;
     this.locked = false;
     this.keys = new Set();
