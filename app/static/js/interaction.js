@@ -14,16 +14,18 @@ export class InteractionSystem {
   update(originPosition) {
     this.raycaster.setFromCamera(new THREE.Vector2(0, 0), this.camera);
     let nearest = null;
-    let distance = Number.POSITIVE_INFINITY;
+    let best = Number.POSITIVE_INFINITY;
+    const world = new THREE.Vector3();
     for (const item of this.interactables) {
-      const mesh = item.mesh;
-      const intersects = this.raycaster.intersectObject(mesh, false);
-      if (!intersects.length) continue;
-      const d = intersects[0].distance;
-      const realDist = mesh.position.distanceTo(originPosition);
-      if (d < distance && realDist < 4.5) {
+      item.mesh.getWorldPosition(world);
+      const dist = world.distanceTo(originPosition);
+      if (dist > 5.4) continue;
+      const target = item.group || item.mesh;
+      const looking = this.raycaster.intersectObject(target, true).length > 0 || dist < 2.6;
+      if (!looking) continue;
+      if (dist < best) {
         nearest = item;
-        distance = d;
+        best = dist;
       }
     }
     this.current = nearest;

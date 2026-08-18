@@ -80,7 +80,7 @@ export class Hud {
   }
 
   setZone(zone, objective) {
-    this.zoneCard.innerHTML = `<strong>${escapeHtml(zone)}</strong><div>${escapeHtml(objective)}</div>`;
+    this.zoneCard.innerHTML = `<span class="kicker">Current zone</span><strong>${escapeHtml(zone)}</strong><div>${escapeHtml(objective)}</div>`;
   }
 
   setPrompt(text, state = "warn") {
@@ -91,6 +91,7 @@ export class Hud {
   setPulse(state, fingerprint) {
     const className = state === "online" ? "allow" : state === "degraded" ? "warn" : "deny";
     this.pulseCard.innerHTML = `
+      <span class="kicker">Node pulse</span>
       <div>AffixIO pulse: <span class="${className}">${state}</span></div>
       <div>Node key: ${escapeHtml(fingerprint)}</div>
     `;

@@ -33,13 +33,8 @@ let audio;
 let hovered = null;
 
 function updateHover(next) {
-  if (hovered && hovered.mesh?.material?.emissive) {
-    hovered.mesh.material.emissive.set(0x000000);
-  }
   hovered = next;
-  if (hovered && hovered.mesh?.material?.emissive) {
-    hovered.mesh.material.emissive.set(0x17475f);
-  }
+  if (scene) scene.setHovered(next);
 }
 
 async function bootstrap() {
