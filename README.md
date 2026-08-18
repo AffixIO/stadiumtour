@@ -20,6 +20,7 @@ The simulation demonstrates how proof-based policy checks can allow or deny acce
 - FastAPI + Uvicorn
 - Vanilla JavaScript + Three.js
 - WebSocket event stream for live telemetry
+- Three.js open-source post-processing pipeline (EffectComposer + UnrealBloomPass)
 
 ## Run locally
 
@@ -53,6 +54,11 @@ cp .env.example .env
 - H: controls help
 - Tab: attack simulator (Security Admin only)
 - Escape: unlock pointer lock for HUD interaction
+
+At launch, choose:
+
+- Cinematic mode: higher post-processing quality and bloom
+- Performance mode: reduced post-processing for smoother frame rate
 
 ## Persona model
 

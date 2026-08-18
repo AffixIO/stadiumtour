@@ -1,5 +1,5 @@
 // Credit: @paparichens
-import * as THREE from "/static/vendor/three.module.js?v=arena5";
+import * as THREE from "/static/vendor/three.module.js?v=arena6";
 import { makePosterTexture, makeSignTexture } from "./materials.js";
 
 export function addBox(scene, colliders, mats, spec) {

@@ -11,6 +11,7 @@ import { drawMinimap } from "./minimap.js";
 const startScreen = document.getElementById("start-screen");
 const startButton = document.getElementById("start-button");
 const startError = document.getElementById("start-error");
+const graphicsMode = document.getElementById("graphics-mode");
 const canvas = document.getElementById("game-canvas");
 const minimapCanvas = document.getElementById("minimap");
 
@@ -24,6 +25,7 @@ const state = {
     attack: false,
   },
   events: [],
+  graphics: "cinematic",
 };
 
 let scene;
@@ -62,6 +64,7 @@ function updateHover(next) {
 async function bootstrap() {
   state.config = await fetchConfig();
   scene = new ArenaScene(canvas);
+  scene.setGraphicsProfile(state.graphics);
   player = new FirstPersonPlayer(scene.camera, canvas);
   audio = new AudioEngine();
   hud = new Hud(state.config);
@@ -219,6 +222,7 @@ startButton.addEventListener("click", async () => {
   isBootstrapping = true;
   startButton.disabled = true;
   startButton.textContent = "Loading Arena...";
+  state.graphics = graphicsMode?.value || "cinematic";
   startError.classList.add("hidden");
   startError.textContent = "";
   try {

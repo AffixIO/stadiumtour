@@ -1,5 +1,8 @@
 // Credit: @paparichens
-import * as THREE from "/static/vendor/three.module.js?v=arena5";
+import * as THREE from "/static/vendor/three.module.js?v=arena6";
+import { EffectComposer } from "/static/vendor/postprocessing/EffectComposer.js";
+import { RenderPass } from "/static/vendor/postprocessing/RenderPass.js";
+import { UnrealBloomPass } from "/static/vendor/postprocessing/UnrealBloomPass.js";
 import { createMaterialLibrary, drawLedFrame, makeLedScreen, makeSignTexture } from "./materials.js";
 import {
   addBarrierRun,
@@ -33,13 +36,19 @@ export class ArenaScene {
     this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
     this.clock = new THREE.Clock();
     this.time = 0;
+    this.graphicsProfile = "cinematic";
+    this.composer = null;
+    this.bloomPass = null;
     this.colliders = [];
     this.interactables = [];
     this.animated = [];
     this.zoneMarkers = [];
     this.ledScreens = [];
+    this.rainPositions = null;
     this.mats = createMaterialLibrary();
     this._buildWorld();
+    this._setupPostProcessing();
+    this.setGraphicsProfile("cinematic");
     window.addEventListener("resize", () => this.onResize());
   }
 
@@ -56,6 +65,32 @@ export class ArenaScene {
     this._buildSoc();
     this._buildAtmosphere();
     this._registerZones();
+  }
+
+  _setupPostProcessing() {
+    const renderPass = new RenderPass(this.scene, this.camera);
+    this.bloomPass = new UnrealBloomPass(
+      new THREE.Vector2(window.innerWidth, window.innerHeight),
+      0.65,
+      0.42,
+      0.84
+    );
+    this.composer = new EffectComposer(this.renderer);
+    this.composer.addPass(renderPass);
+    this.composer.addPass(this.bloomPass);
+  }
+
+  setGraphicsProfile(profile = "cinematic") {
+    this.graphicsProfile = profile;
+    const cinematic = profile !== "performance";
+    this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, cinematic ? 1.75 : 1.15));
+    this.renderer.toneMappingExposure = cinematic ? 1.16 : 1.04;
+    this.scene.fog.density = cinematic ? 0.012 : 0.009;
+    if (this.bloomPass) {
+      this.bloomPass.strength = cinematic ? 0.7 : 0.25;
+      this.bloomPass.radius = cinematic ? 0.45 : 0.22;
+      this.bloomPass.threshold = cinematic ? 0.84 : 0.9;
+    }
   }
 
   _buildSkyAndLights() {
@@ -551,6 +586,28 @@ export class ArenaScene {
     const haze = new THREE.Points(hazeGeo, this.mats.haze);
     this.scene.add(haze);
     this.animated.push({ type: "haze", object: haze });
+
+    const rainGeo = new THREE.BufferGeometry();
+    const rainCount = 1800;
+    this.rainPositions = new Float32Array(rainCount * 3);
+    for (let i = 0; i < rainCount; i += 1) {
+      this.rainPositions[i * 3] = (Math.random() - 0.5) * 190;
+      this.rainPositions[i * 3 + 1] = 2 + Math.random() * 32;
+      this.rainPositions[i * 3 + 2] = (Math.random() - 0.5) * 180;
+    }
+    rainGeo.setAttribute("position", new THREE.BufferAttribute(this.rainPositions, 3));
+    const rain = new THREE.Points(
+      rainGeo,
+      new THREE.PointsMaterial({
+        color: 0x87a9c5,
+        size: 0.05,
+        transparent: true,
+        opacity: 0.42,
+        depthWrite: false,
+      })
+    );
+    this.scene.add(rain);
+    this.animated.push({ type: "rain", object: rain, geometry: rainGeo });
   }
 
   _registerZones() {
@@ -760,6 +817,9 @@ export class ArenaScene {
     this.camera.aspect = window.innerWidth / window.innerHeight;
     this.camera.updateProjectionMatrix();
     this.renderer.setSize(window.innerWidth, window.innerHeight);
+    if (this.composer) {
+      this.composer.setSize(window.innerWidth, window.innerHeight);
+    }
   }
 
   render() {
@@ -784,6 +844,22 @@ export class ArenaScene {
         item.object.rotation.y = Math.sin(t * 0.6 + item.phase) * 0.15;
       } else if (item.type === "haze") {
         item.object.position.y = Math.sin(t * 0.25) * 0.4;
+      } else if (item.type === "rain") {
+        const attr = item.geometry.getAttribute("position");
+        for (let i = 0; i < attr.count; i += 1) {
+          const yIndex = i * 3 + 1;
+          const xIndex = i * 3;
+          const zIndex = i * 3 + 2;
+          this.rainPositions[yIndex] -= delta * (12 + ((i % 9) * 0.6));
+          this.rainPositions[xIndex] += Math.sin(t + i) * delta * 0.35;
+          this.rainPositions[zIndex] -= delta * 2.2;
+          if (this.rainPositions[yIndex] < 0.2) {
+            this.rainPositions[yIndex] = 28 + Math.random() * 10;
+            this.rainPositions[xIndex] = (Math.random() - 0.5) * 190;
+            this.rainPositions[zIndex] = (Math.random() - 0.5) * 180;
+          }
+        }
+        attr.needsUpdate = true;
       } else if (item.type === "monitor") {
         item.object.material.emissiveIntensity = 0.45 + Math.sin(t * 3 + item.phase) * 0.25;
       } else if (item.type === "door") {
@@ -799,7 +875,11 @@ export class ArenaScene {
       }
     }
 
-    this.renderer.render(this.scene, this.camera);
+    if (this.composer) {
+      this.composer.render();
+    } else {
+      this.renderer.render(this.scene, this.camera);
+    }
     return delta;
   }
 }
