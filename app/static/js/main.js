@@ -32,6 +32,27 @@ let interaction;
 let hud;
 let audio;
 let hovered = null;
+let isBootstrapping = false;
+
+function showStartFailure(message) {
+  startError.textContent = message;
+  startError.classList.remove("hidden");
+  startButton.disabled = false;
+  startButton.textContent = "Enter Arena";
+}
+
+window.addEventListener("error", (event) => {
+  if (!startScreen.classList.contains("hidden")) {
+    showStartFailure(`Front-end error: ${event.message}`);
+  }
+});
+
+window.addEventListener("unhandledrejection", (event) => {
+  if (!startScreen.classList.contains("hidden")) {
+    const reason = event.reason?.message || String(event.reason || "unknown error");
+    showStartFailure(`Startup failed: ${reason}`);
+  }
+});
 
 function updateHover(next) {
   hovered = next;
@@ -65,6 +86,22 @@ async function bootstrap() {
   bindPanels();
   connectSocket();
   loop();
+}
+
+async function bootstrapWithTimeout(timeoutMs = 15000) {
+  let timer;
+  try {
+    return await Promise.race([
+      bootstrap(),
+      new Promise((_, reject) => {
+        timer = setTimeout(() => {
+          reject(new Error("initialisation timed out"));
+        }, timeoutMs);
+      }),
+    ]);
+  } finally {
+    clearTimeout(timer);
+  }
 }
 
 function bindPanels() {
@@ -178,16 +215,28 @@ function loop() {
 }
 
 startButton.addEventListener("click", async () => {
+  if (isBootstrapping) return;
+  isBootstrapping = true;
   startButton.disabled = true;
   startButton.textContent = "Loading Arena...";
+  startError.classList.add("hidden");
+  startError.textContent = "";
   try {
-    await bootstrap();
+    if (!document.pointerLockElement) {
+      await canvas.requestPointerLock?.();
+    }
+  } catch {
+    // Lock can fail here if browser policy blocks it.
+  }
+  try {
+    await bootstrapWithTimeout();
     startScreen.classList.add("hidden");
-    player.lock();
+    if (!player.locked) {
+      hud.setPrompt("Click inside the view to lock controls", "warn");
+    }
   } catch (error) {
-    startError.textContent = `Arena failed to start: ${error.message}`;
-    startError.classList.remove("hidden");
-    startButton.disabled = false;
-    startButton.textContent = "Enter Arena";
+    showStartFailure(`Arena failed to start: ${error.message}`);
+  } finally {
+    isBootstrapping = false;
   }
 });

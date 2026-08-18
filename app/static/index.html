@@ -107,6 +107,8 @@
             if (!window.__arenaModuleLoaded) {
               error.textContent = "Front-end modules did not load. Hard refresh with Ctrl+Shift+R, then retry.";
               error.classList.remove("hidden");
+              button.disabled = false;
+              button.textContent = "Enter Arena";
             }
           }, 250);
         });
