@@ -137,9 +137,16 @@ app/
       minimap.js
       audio.js
       network.js
+      materials.js
+      props.js
+    vendor/
+      three.module.js
+      three.core.js
 tests/
   test_simulation.py
 ```
+
+If the start button appears dead, check the Uvicorn log for `404` on `/static/vendor/three.core.js`. Both vendor files must be present. Current Three.js splits the library across those two modules.
 
 ## Tests
 
