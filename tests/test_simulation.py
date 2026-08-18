@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from pathlib import Path
+
 import pytest
 
 from app.simulation.engine import AccessArenaEngine
@@ -61,3 +63,13 @@ def test_audit_log_pii_restriction_blocks_identity_fields():
     }
     with pytest.raises(ValueError):
         sanitise_event(payload)
+
+
+def test_three_vendor_files_exist():
+    vendor = Path(__file__).resolve().parents[1] / "app" / "static" / "vendor"
+    core = vendor / "three.core.js"
+    module = vendor / "three.module.js"
+    assert core.is_file(), "three.core.js must be shipped with the app"
+    assert module.is_file(), "three.module.js must be shipped with the app"
+    assert core.stat().st_size > 100_000
+    assert module.stat().st_size > 100_000

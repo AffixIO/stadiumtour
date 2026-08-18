@@ -64,6 +64,42 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+
+@app.middleware("http")
+async def no_store_static(request, call_next):
+    response = await call_next(request)
+    if request.url.path.startswith("/static/") or request.url.path == "/favicon.ico":
+        response.headers["Cache-Control"] = "no-store"
+    return response
+
+
+@app.get("/favicon.ico")
+async def favicon() -> FileResponse:
+    return FileResponse(STATIC_DIR / "favicon.svg", media_type="image/svg+xml")
+
+
+def _vendor_js(filename: str) -> FileResponse:
+    path = STATIC_DIR / "vendor" / filename
+    if not path.exists():
+        raise HTTPException(status_code=404, detail=f"Missing vendor file: {filename}")
+    return FileResponse(
+        path,
+        media_type="text/javascript",
+        headers={"Cache-Control": "no-store"},
+    )
+
+
+@app.get("/static/vendor/three.core.js")
+async def three_core_js() -> FileResponse:
+    return _vendor_js("three.core.js")
+
+
+@app.get("/static/vendor/three.module.js")
+async def three_module_js() -> FileResponse:
+    return _vendor_js("three.module.js")
+
+
 app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
 
 
