@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="en-GB">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AffixIO Access Arena | Interactive Venue Access Simulation</title>
+    <meta
+      name="description"
+      content="Explore AffixIO Access Arena, a fictional first-person venue simulation showing privacy-preserving, post-quantum-secure proof-based access controls across parking, gates, seating, VIP, backstage, and security operations."
+    />
+    <meta
+      name="keywords"
+      content="access control simulation, post-quantum security demo, privacy-preserving credentials, venue security training, event access management, anonymous proof verification, zero-knowledge style verification, WebSocket security dashboard"
+    />
+    <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
+    <meta name="author" content="AffixIO" />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="AffixIO Access Arena" />
+    <meta property="og:locale" content="en_GB" />
+    <meta property="og:title" content="AffixIO Access Arena | Immersive 3D Proof-Based Venue Access Simulation" />
+    <meta
+      property="og:description"
+      content="Walk a live event venue in first-person and test simulated ticket, role, Merkle, nullifier, and post-quantum checks with live anonymous security telemetry."
+    />
+    <meta property="og:url" content="http://localhost:8000/" />
+    <meta property="og:image" content="https://images.unsplash.com/photo-1514525253161-7a46d19cd819?auto=format&fit=crop&w=1600&q=80" />
+    <meta property="og:image:alt" content="Stylised night-time concert arena exterior used as simulation cover art" />
+    <meta property="og:image:width" content="1600" />
+    <meta property="og:image:height" content="900" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="AffixIO Access Arena" />
+    <meta
+      name="twitter:description"
+      content="Educational simulation of anonymous venue access verification using synthetic credentials and controlled policy checks."
+    />
+    <meta name="twitter:image" content="https://images.unsplash.com/photo-1514525253161-7a46d19cd819?auto=format&fit=crop&w=1600&q=80" />
+    <meta
+      name="application-name"
+      content="AffixIO Access Arena"
+    />
+    <meta name="theme-color" content="#081825" />
+    <link rel="stylesheet" href="/static/css/arena.css" />
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "SoftwareApplication",
+        "name": "AffixIO Access Arena",
+        "applicationCategory": "SecurityApplication",
+        "operatingSystem": "Web Browser",
+        "description": "Interactive educational simulation of venue access-control checkpoints with synthetic proof verification and live anonymous telemetry.",
+        "offers": { "@type": "Offer", "price": "0", "priceCurrency": "GBP" },
+        "publisher": { "@type": "Organization", "name": "AffixIO" }
+      }
+    </script>
+    <!-- Credit: @paparichens -->
+  </head>
+  <body>
+    <div id="start-screen">
+      <div class="start-panel">
+        <h1>AffixIO Access Arena</h1>
+        <p>
+          This is a fictional educational simulation. Credentials, proofs, attendees, and cryptographic material are synthetic.
+          Verification logic models policy flow, it is not production cryptography.
+        </p>
+        <button id="start-button" type="button">Enter Arena</button>
+      </div>
+    </div>
+
+    <canvas id="game-canvas" aria-label="3D arena view"></canvas>
+
+    <div id="hud">
+      <div id="zone-card" class="hud-card top-left"></div>
+      <div id="persona-card" class="hud-card top-centre">
+        <label for="persona-select">Persona</label>
+        <select id="persona-select" aria-label="Select active persona"></select>
+      </div>
+      <div id="pulse-card" class="hud-card top-right"></div>
+
+      <div id="interaction-prompt"></div>
+      <div id="crosshair" aria-hidden="true">+</div>
+
+      <div id="proof-inspector" class="hud-panel hidden"></div>
+      <div id="event-feed" class="hud-panel"></div>
+
+      <div id="minimap-panel" class="hud-panel hidden">
+        <canvas id="minimap" width="260" height="200"></canvas>
+      </div>
+      <div id="help-panel" class="hud-panel hidden"></div>
+      <div id="attack-panel" class="hud-panel hidden"></div>
+      <div id="soc-panel" class="hud-panel hidden"></div>
+    </div>
+
+    <script type="importmap">
+      {
+        "imports": {
+          "three": "https://unpkg.com/three@0.167.1/build/three.module.js"
+        }
+      }
+    </script>
+    <script type="module" src="/static/js/main.js"></script>
+  </body>
+</html>
