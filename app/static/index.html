@@ -42,7 +42,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
-    <link rel="stylesheet" href="/static/css/arena.css?v=arena5" />
+    <link rel="stylesheet" href="/static/css/arena.css?v=arena6" />
     <script type="application/ld+json">
       {
         "@context": "https://schema.org",
@@ -67,6 +67,11 @@
           Verification logic models policy flow, it is not production cryptography.
         </p>
         <button id="start-button" type="button">Enter Arena</button>
+        <label for="graphics-mode" class="kicker">Graphics mode</label>
+        <select id="graphics-mode" aria-label="Graphics mode">
+          <option value="cinematic" selected>Cinematic</option>
+          <option value="performance">Performance</option>
+        </select>
         <p id="start-error" class="hidden"></p>
       </div>
     </div>
@@ -114,6 +119,6 @@
         });
       });
     </script>
-    <script type="module" src="/static/js/main.js?v=arena5"></script>
+    <script type="module" src="/static/js/main.js?v=arena6"></script>
   </body>
 </html>

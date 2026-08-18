@@ -1,5 +1,5 @@
 // Credit: @paparichens
-import * as THREE from "/static/vendor/three.module.js?v=arena5";
+import * as THREE from "/static/vendor/three.module.js?v=arena6";
 
 export class FirstPersonPlayer {
   constructor(camera, domElement) {
