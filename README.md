@@ -137,9 +137,20 @@ app/
       minimap.js
       audio.js
       network.js
+      materials.js
+      props.js
+    vendor/
+      three.module.js
+      three.core.js
 tests/
   test_simulation.py
 ```
+
+If the start button appears dead, look at the Uvicorn log.
+
+- A `404` on `/static/vendor/three.core.js` means the browser is still using an old cached Three.js file.
+- Current Three.js is bundled into `app/static/vendor/three.module.js`. That file must load with a `200`, not a `304` from an older copy.
+- Restart Uvicorn, then hard-refresh the browser (Ctrl+Shift+R) on `http://127.0.0.1:8000`.
 
 ## Tests
 
